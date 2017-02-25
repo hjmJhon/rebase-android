@@ -20,6 +20,8 @@
 
 package com.drakeet.rebase.activity;
 
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -42,6 +44,7 @@ import com.drakeet.rebase.fragment.LoginFragment;
 import com.drakeet.rebase.tool.AbstractPageChangeListener;
 import com.drakeet.rebase.tool.AbstractTabSelectedListener;
 import com.drakeet.rebase.tool.Analytics;
+import com.drakeet.rebase.tool.Colorful;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import java.util.List;
 import rx.android.schedulers.AndroidSchedulers;
@@ -70,6 +73,7 @@ public class MainActivity extends ToolbarActivity {
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        Colorful.init(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -146,6 +150,16 @@ public class MainActivity extends ToolbarActivity {
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        for (int i = 0; i < menu.size(); i++) {
+            Drawable drawable = menu.getItem(i).getIcon();
+            if (drawable != null) {
+                drawable.mutate();
+                int color = getResources().getIdentifier("colorControlNormal", "style",
+                    getPackageName());
+                drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            }
+
+        }
         return true;
     }
 
@@ -161,6 +175,10 @@ public class MainActivity extends ToolbarActivity {
             case R.id.action_favorite:
                 // FavoritesActivity.start(this);
                 return true;
+            case R.id.action_change_theme:
+                Colorful.of(this)
+                    .changeOne()
+                    .apply();
             default:
                 return super.onOptionsItemSelected(item);
         }
